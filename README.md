@@ -1,296 +1,293 @@
-# Medical Image Enhancement for Diagnosis Support
+# Medical Image Enhancement for Diagnosis Support 🏥
 
-## Project Overview
+A comprehensive image enhancement pipeline for medical images (X-rays, MRI scans, Ultrasound) designed to improve the visibility of anatomical structures and support medical diagnosis.
 
-This project implements a comprehensive image enhancement pipeline for medical images such as X-rays and MRI scans. The goal is to improve the visibility of anatomical structures to support medical diagnosis by applying advanced image processing techniques.
+## 📋 Project Overview
 
-## Key Features
+This project implements various state-of-the-art image processing techniques specifically tailored for medical imaging. It addresses key challenges in medical image analysis such as:
+- Low contrast in anatomical structures
+- Noise from imaging equipment
+- Need for edge preservation while enhancing details
+- Balancing noise reduction with detail retention
 
-### 1. **Noise Reduction with Edge Preservation**
-- **Bilateral Filter**: Reduces noise while preserving anatomical edges
-- **Morphological Operations**: Opens and closes for structural noise removal
-- **Non-Local Means Denoising**: Advanced technique for effective noise reduction
+## ✨ Features
+
+### 1. **Noise Reduction Techniques**
+- **Gaussian Filter**: Basic smoothing for noise reduction
+- **Median Filter**: Excellent for salt-and-pepper noise
+- **Bilateral Filter**: Edge-preserving noise reduction
+- **Non-Local Means Denoising**: Advanced technique for medical images
 
 ### 2. **Contrast Enhancement**
-- **Histogram Equalization**: Standard technique for improving pixel value distribution
-- **CLAHE (Contrast Limited Adaptive Histogram Equalization)**: 
-  - Prevents over-amplification of noise
-  - Provides localized contrast enhancement
-  - Better for medical image quality
-- **Adaptive Histogram Equalization**: Fine-grained contrast improvement
+- **Histogram Equalization**: Standard contrast enhancement
+- **CLAHE** (Contrast Limited Adaptive Histogram Equalization): Superior for medical images
+- **Gamma Correction**: Brightness adjustment
+- **Contrast Stretching**: Dynamic range optimization
 
-### 3. **Edge Preservation and Detection**
-- **Gaussian Smoothing with Edge Maps**: Maintains anatomical boundaries
-- **Canny Edge Detection**: Identifies anatomical structure boundaries
-- **Sobel Operator**: Gradient-based edge detection
-- **Laplacian Filter**: Zero-crossing edge detection
+### 3. **Edge Preservation & Detection**
+- **Unsharp Masking**: Edge enhancement technique
+- **Bilateral Filtering**: Smoothing while preserving edges
+- **Sobel Edge Detection**: Gradient-based edge detection
+- **Canny Edge Detection**: Multi-stage edge detection
+- **Laplacian Edge Enhancement**: Second derivative-based detection
 
-### 4. **Complete Enhancement Pipeline**
-Combined approach:
-1. Bilateral filtering for noise reduction
-2. CLAHE for adaptive contrast enhancement
-3. Results in clear, diagnostic-quality images
+### 4. **Comprehensive Pipelines**
+- **Comprehensive Enhancement**: Multi-step enhancement pipeline
+- **Advanced Enhancement**: Optimized pipeline for medical images
+- **Step-by-step Visualization**: Understanding each enhancement stage
 
-## Expected Learning Outcomes
-
-✓ **Enhance Low-Contrast Medical Images**: Improve visibility of anatomical structures in poor-quality scans
-
-✓ **Apply Histogram Equalization and CLAHE**: Understand how local and global contrast enhancement works
-
-✓ **Use Smoothing and Edge-Preserving Filters**: Learn the importance of maintaining anatomical boundaries
-
-✓ **Understand Image Quality in Diagnosis**: Recognize how image quality impacts diagnostic accuracy
-
-## Installation
+## 🚀 Installation
 
 ### Requirements
 ```bash
-python >= 3.8
-opencv-python >= 4.0
-numpy >= 1.19
-matplotlib >= 3.2
-scipy >= 1.5
-scikit-image >= 0.18
+pip install opencv-python numpy matplotlib
 ```
 
-### Setup
-```bash
-# Install required packages
-pip install opencv-python numpy matplotlib scipy scikit-image
+### Required Libraries
+- **OpenCV (cv2)**: Image processing operations
+- **NumPy**: Numerical operations
+- **Matplotlib**: Visualization and plotting
+
+## 📂 Project Structure
+
+```
+Medical-Image-Enhancement/
+│
+├── medical_image_project.py    # Main Python script
+├── README.md                    # Project documentation
+├── QUICKSTART.md                # Quick start guide
+├── requirements.txt             # Dependencies
+│
+├── img/                         # Input images directory
+│   ├── xray.png                # X-ray sample image
+│   └── ultra.png               # Ultrasound sample image
+│
+└── output/                      # Enhanced images directory (auto-created)
+    ├── enhanced_xray.png       # Enhanced X-ray output
+    └── enhanced_ultra.png      # Enhanced ultrasound output
 ```
 
-## Usage
+## 💻 Usage
 
-### Basic Usage
+### Interactive Mode (Default)
 
-```python
-from medical_image_enhancement import MedicalImageEnhancer
-
-# Load an image
-enhancer = MedicalImageEnhancer(image_path='path_to_medical_image.jpg')
-
-# Or create synthetic image for testing
-enhancer.create_sample_medical_image(image_type='chest')
-
-# Apply complete enhancement pipeline
-enhanced = enhancer.apply_complete_enhancement_pipeline()
-
-# Visualize results
-enhancer.visualize_comparison(enhanced_key='pipeline', save_path='comparison.png')
-```
-
-### Detailed Workflow
-
-```python
-# 1. Initialize
-enhancer = MedicalImageEnhancer(image_path='xray.jpg')
-
-# 2. Apply individual techniques
-denoised = enhancer.apply_noise_reduction(method='bilateral')
-equalized = enhancer.apply_histogram_equalization()
-clahe_enhanced = enhancer.apply_clahe(clip_limit=2.0, tile_size=8)
-
-# 3. Detect edges
-edges = enhancer.detect_edges(method='canny')
-
-# 4. Compare results
-stats = enhancer.compare_enhancements()
-
-# 5. Visualize
-enhancer.visualize_enhancements()
-```
-
-### Running the Demo
+The program features an interactive menu system:
 
 ```bash
-python medical_image_enhancement.py
+python medical_image_project.py
 ```
 
-This will:
-- Create a synthetic chest X-ray image
-- Apply all enhancement techniques
-- Generate comparison visualizations
-- Display image quality statistics
-- Save results to `medical_image_output/` folder
+You'll be prompted with three menus:
+1. **Image Selection**: Choose X-Ray, Ultrasound, or both
+2. **Analysis Type**: Select specific analysis or run all
+3. **Enhancement Technique**: Choose how to save the enhanced image
 
-## Class: MedicalImageEnhancer
-
-### Methods
-
-#### Initialization
-- `__init__(image_path=None, image_array=None)`: Initialize with image file or numpy array
-- `create_sample_medical_image(image_type)`: Create synthetic medical images for testing
-
-#### Enhancement Techniques
-- `apply_noise_reduction(method)`: Remove noise while preserving edges
-- `apply_histogram_equalization()`: Standard histogram equalization
-- `apply_clahe(clip_limit, tile_size)`: CLAHE enhancement
-- `apply_adaptive_histogram_equalization()`: Adaptive equalization
-- `apply_edge_preservation(sigma)`: Edge-preserving smoothing
-- `apply_complete_enhancement_pipeline()`: Combined denoising + CLAHE
-
-#### Edge Detection
-- `detect_edges(method)`: Canny, Sobel, or Laplacian edge detection
-
-#### Analysis & Visualization
-- `get_image_statistics(image)`: Calculate mean, std, contrast, etc.
-- `compare_enhancements()`: Compare original vs enhanced statistics
-- `visualize_enhancements()`: Create side-by-side comparison of all techniques
-- `visualize_comparison()`: Detailed comparison with histograms and statistics
-
-## Image Statistics
-
-The system calculates several quality metrics:
-
-| Metric | Description | Improvement |
-|--------|-------------|-------------|
-| **Mean** | Average pixel intensity | Should increase for dark images |
-| **Std (Standard Deviation)** | Spread of pixel values | Increases with better contrast |
-| **Contrast Ratio** | Std / Mean | Higher is better for visibility |
-| **Min/Max** | Intensity range | Better utilization of value range |
-| **Median** | Middle pixel value | Indicates central brightness |
-
-## Algorithm Details
-
-### 1. Bilateral Filtering
+**Example interaction:**
 ```
-Combines Gaussian blur with edge preservation
-Formula: I_filtered(x) = Σ w(x,ξ) * I(ξ)
-where w depends on both spatial distance and intensity difference
+Enter your choice (1-3): 1        # Select X-Ray
+Enter your choice (1-6): 6        # Run all analyses
+Enter your choice (1-4): 1        # Save comprehensive enhancement
 ```
 
-**Advantages**:
-- Preserves anatomical edges
-- Effective noise reduction
-- Real-time performance
+See [INTERACTIVE_GUIDE.md](INTERACTIVE_GUIDE.md) for detailed menu explanations.
 
-### 2. CLAHE (Contrast Limited Adaptive Histogram Equalization)
-```
-Divides image into tiles and applies histogram equalization locally
-Clips histogram to prevent noise amplification
-```
+### Programmatic Usage (Advanced)
 
-**Parameters**:
-- `clipLimit`: Threshold for contrast limiting (2.0-4.0 recommended)
-- `tileGridSize`: Grid size for local regions (8×8 typical)
+```python
+from medical_image_project import MedicalImageEnhancer
 
-### 3. Edge Detection Methods
+# Initialize with image path
+enhancer = MedicalImageEnhancer("img/xray.png")
 
-**Canny**: Multi-stage edge detection
-```
-1. Noise reduction (Gaussian blur)
-2. Gradient calculation
-3. Non-maximum suppression
-4. Hysteresis thresholding
-```
+# Apply specific techniques
+clahe_image = enhancer.clahe(clip_limit=2.0)
+bilateral_image = enhancer.bilateral_filter()
+enhanced = enhancer.comprehensive_enhancement()
 
-**Sobel**: Gradient-based operator
-```
-Gx = [-1  0  1]     Gy = [-1  -2  -1]
-     [-2  0  2]          [ 0   0   0]
-     [-1  0  1]          [ 1   2   1]
+# Visualize comparisons
+enhancer.compare_enhancements()
+enhancer.analyze_noise_reduction()
+enhancer.analyze_contrast_enhancement()
+enhancer.analyze_edge_preservation()
+
+# Display complete pipeline
+enhancer.display_complete_pipeline()
+
+# Save enhanced image
+enhancer.save_enhanced_image("output.png", technique='comprehensive')
 ```
 
-## Medical Image Enhancement Workflow
+## 🔬 Enhancement Pipeline
 
+The comprehensive enhancement pipeline follows these steps:
+
+1. **Noise Reduction** (Bilateral Filter)
+   - Reduces noise while preserving edges
+   - Parameters: d=9, σ_color=75, σ_space=75
+
+2. **Contrast Enhancement** (CLAHE)
+   - Improves local contrast
+   - Parameters: clipLimit=2.0, tileGridSize=(8,8)
+
+3. **Edge Enhancement** (Unsharp Masking)
+   - Sharpens edges and fine details
+   - Weighted combination of original and blurred image
+
+## 📊 Analysis Functions
+
+### 1. Complete Pipeline Visualization
+```python
+enhancer.display_complete_pipeline()
 ```
-Input Medical Image (Low Contrast, Noisy)
-         ↓
-    [STAGE 1: Denoising]
-    Bilateral Filter (preserves edges)
-         ↓
-    [STAGE 2: Contrast Enhancement]
-    CLAHE (adaptive local enhancement)
-         ↓
-    [STAGE 3: Analysis]
-    Edge Detection
-    Statistics Calculation
-         ↓
-    [OUTPUT: Enhanced Diagnostic Image]
-    Improved visibility of anatomical structures
+Shows step-by-step transformation of the image through the enhancement pipeline.
+
+### 2. Enhancement Techniques Comparison
+```python
+enhancer.compare_enhancements()
+```
+Compares 8 different enhancement techniques side-by-side.
+
+### 3. Noise Reduction Analysis
+```python
+enhancer.analyze_noise_reduction()
+```
+Demonstrates effectiveness of different noise reduction methods on noisy images.
+
+### 4. Contrast Enhancement Analysis
+```python
+enhancer.analyze_contrast_enhancement()
+```
+Compares various contrast enhancement techniques with their histograms.
+
+### 5. Edge Preservation Analysis
+```python
+enhancer.analyze_edge_preservation()
+```
+Shows edge detection results before and after enhancement.
+
+## 🎓 Learning Outcomes
+
+By working with this project, you will understand:
+
+1. ✅ **Medical Image Enhancement**
+   - How to enhance low-contrast medical images
+   - Importance of preserving anatomical details
+
+2. ✅ **Histogram Processing**
+   - Standard histogram equalization
+   - CLAHE and its advantages over standard methods
+   - Histogram analysis for image quality assessment
+
+3. ✅ **Filtering Techniques**
+   - Difference between smoothing filters (Gaussian, Median)
+   - Edge-preserving filters (Bilateral, NLM)
+   - When to use each filter type
+
+4. ✅ **Edge Detection**
+   - Various edge detection algorithms
+   - Importance of edges in medical diagnosis
+   - Trade-offs between noise reduction and edge preservation
+
+5. ✅ **Image Quality in Diagnosis**
+   - How image quality affects diagnostic accuracy
+   - Role of preprocessing in medical imaging
+   - Objective quality metrics
+
+## 🔍 Technical Details
+
+### Key Algorithms Explained
+
+#### CLAHE (Contrast Limited Adaptive Histogram Equalization)
+- Divides image into small tiles
+- Applies histogram equalization to each tile
+- Uses contrast limiting to prevent noise amplification
+- **Why for medical images?** Enhances local contrast without over-amplifying noise
+
+#### Bilateral Filter
+- Edge-preserving smoothing filter
+- Considers both spatial proximity and intensity similarity
+- **Formula**: Combines domain filter and range filter
+- **Why for medical images?** Reduces noise while preserving important anatomical edges
+
+#### Unsharp Masking
+- Subtracts blurred version from original
+- Enhances high-frequency components (edges)
+- **Process**: Enhanced = Original + α × (Original - Blurred)
+- **Why for medical images?** Makes fine details more visible
+
+## 📈 Performance Considerations
+
+- **Processing Time**: Varies by technique
+  - Fastest: Gaussian Filter, Histogram Equalization
+  - Moderate: Median Filter, CLAHE, Bilateral Filter
+  - Slowest: Non-Local Means Denoising
+
+- **Quality vs Speed Trade-off**:
+  - For real-time: Use Bilateral + CLAHE
+  - For best quality: Use NLM + CLAHE + Unsharp Masking
+
+## 🛠️ Customization
+
+### Adjusting Parameters
+
+#### CLAHE Parameters
+```python
+# More aggressive enhancement
+enhancer.clahe(clip_limit=4.0, tile_size=(4, 4))
+
+# Gentler enhancement
+enhancer.clahe(clip_limit=1.5, tile_size=(16, 16))
 ```
 
-## Output Files
+#### Bilateral Filter Parameters
+```python
+# Stronger noise reduction
+enhancer.bilateral_filter(d=15, sigma_color=100, sigma_space=100)
 
-The script generates output in the `medical_image_output/` directory:
+# Better edge preservation
+enhancer.bilateral_filter(d=9, sigma_color=50, sigma_space=50)
+```
 
-### 1. `enhancement_comparison.png`
-- Original image and histogram
-- Enhanced image and histogram
-- Difference map
-- Statistics comparison table
+## 📝 Sample Output
 
-### 2. `all_enhancements.png`
-- Side-by-side comparison of all techniques:
-  - Original
-  - Bilateral denoised
-  - Histogram equalized
-  - CLAHE enhanced
-  - Adaptive equalized
-  - Edge-preserved
-  - Edge map (Canny)
+The program generates:
+1. **Enhanced images** saved in the `output/` directory (auto-created)
+2. **Comparison plots** showing different techniques
+3. **Analysis visualizations** for each enhancement method
+4. **Before/After comparisons** with histograms
 
-## Performance Considerations
+## ⚠️ Important Notes
 
-### Speed
-- **Bilateral Filter**: Moderate (real-time for 512×512)
-- **Histogram Equalization**: Fast (instant)
-- **CLAHE**: Moderate (depends on tile size)
-- **Canny Edge Detection**: Moderate (real-time)
+- Medical images should be in grayscale format
+- Supported formats: PNG, JPG, JPEG, TIFF
+- Enhanced images are for educational purposes
+- Always consult medical professionals for diagnosis
 
-### Memory
-- All techniques operate in-memory
-- Suitable for typical medical image sizes (256×256 to 1024×1024)
+## 🔮 Future Enhancements
 
-### Quality Metrics
-- Contrast improvement typically 15-40% for low-contrast images
-- Edge preservation maintained above 90% in most cases
-
-## Clinical Applications
-
-1. **X-ray Analysis**: Enhanced visibility of fractures, tumors, foreign bodies
-2. **MRI Scans**: Improved tissue contrast for better lesion detection
-3. **CT Scans**: Enhanced anatomical boundary visualization
-4. **Ultrasound Images**: Improved tissue characterization
-5. **Mammography**: Better microcalcification detection
-
-## Limitations
-
-- Synthetic images used in demo; may vary with real medical images
-- Enhancement effectiveness depends on image quality
-- Some techniques may amplify artifacts in severely degraded images
-- Manual parameter tuning may be needed for specific image types
-
-## Best Practices
-
-1. **Always preserve originals**: Keep original images for comparison
-2. **Validate enhancements**: Compare with radiologist feedback
-3. **Tune parameters**: Different image types may need different settings
-4. **Monitor contrast**: Avoid over-enhancement leading to false features
-5. **Benchmark performance**: Test on various image modalities
-
-## References
-
-- Gonzalez, R. C., & Woods, R. E. (2017). Digital Image Processing (4th ed.)
-- OpenCV Documentation: https://docs.opencv.org
-- Histograms and Adaptive Equalization Theory
-- Edge Detection Techniques and Applications in Medical Imaging
-
-## Future Enhancements
-
+Potential improvements:
 - [ ] Deep learning-based enhancement
-- [ ] Multi-scale analysis
-- [ ] Automated parameter tuning
 - [ ] Real-time video enhancement
-- [ ] GPU acceleration
-- [ ] Support for 3D medical volumes
+- [ ] 3D volume enhancement (MRI, CT scans)
+- [ ] Automatic parameter optimization
+- [ ] GUI interface for interactive enhancement
+- [ ] Quality metrics (PSNR, SSIM) calculation
 
-## Author Notes
+## 📚 References
 
-This project demonstrates fundamental image processing techniques essential for medical image analysis. The combination of noise reduction, contrast enhancement, and edge detection provides a robust foundation for diagnostic image improvement.
+1. Pizer, S. M., et al. "Adaptive histogram equalization and its variations" (1987)
+2. Tomasi, C., & Manduchi, R. "Bilateral filtering for gray and color images" (1998)
+3. Buades, A., et al. "Non-local means denoising" (2005)
+4. Zuiderveld, K. "Contrast Limited Adaptive Histogram Equalization" (1994)
+
+## 👨‍💻 Author
+
+Created as part of Digital Image Processing course project.
+
+## 📄 License
+
+This project is for educational purposes.
 
 ---
 
-**Project Status**: ✓ Complete and Tested  
-**Last Updated**: February 2026  
-**Version**: 1.0
+**Note**: This software is designed for educational and research purposes only. It should not be used as a replacement for professional medical imaging software or diagnostic tools.

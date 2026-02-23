@@ -1,31 +1,5 @@
 [
     {
-        "label": "argparse",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "argparse",
-        "description": "argparse",
-        "detail": "argparse",
-        "documentation": {}
-    },
-    {
-        "label": "Path",
-        "importPath": "pathlib",
-        "description": "pathlib",
-        "isExtraImport": true,
-        "detail": "pathlib",
-        "documentation": {}
-    },
-    {
-        "label": "warnings",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "warnings",
-        "description": "warnings",
-        "detail": "warnings",
-        "documentation": {}
-    },
-    {
         "label": "cv2",
         "kind": 6,
         "isExtraImport": true,
@@ -44,15 +18,6 @@
         "documentation": {}
     },
     {
-        "label": "matplotlib",
-        "kind": 6,
-        "isExtraImport": true,
-        "importPath": "matplotlib",
-        "description": "matplotlib",
-        "detail": "matplotlib",
-        "documentation": {}
-    },
-    {
         "label": "matplotlib.pyplot",
         "kind": 6,
         "isExtraImport": true,
@@ -62,11 +27,20 @@
         "documentation": {}
     },
     {
-        "label": "gaussian_filter",
-        "importPath": "scipy.ndimage",
-        "description": "scipy.ndimage",
+        "label": "GridSpec",
+        "importPath": "matplotlib.gridspec",
+        "description": "matplotlib.gridspec",
         "isExtraImport": true,
-        "detail": "scipy.ndimage",
+        "detail": "matplotlib.gridspec",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
         "documentation": {}
     },
     {
@@ -74,169 +48,7 @@
         "kind": 6,
         "importPath": "medical_image_project",
         "description": "medical_image_project",
-        "peekOfCode": "class MedicalImageEnhancer:\n    \"\"\"\n    A class to enhance medical images for improved diagnostic visibility.\n    Attributes:\n        image: The original medical image\n        enhanced_images: Dictionary storing different enhancement results\n    \"\"\"\n    def __init__(self, image_path=None, image_array=None):\n        \"\"\"\n        Initialize the enhancer with either an image file or array.",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "EdgeEnhancer",
-        "kind": 6,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "class EdgeEnhancer:\n    \"\"\"\n    Class for applying edge-based enhancements to medical images.\n    Focuses on Sobel and Laplacian operators for improved visibility.\n    \"\"\"\n    def __init__(self, input_dir=\"img\", output_dir=\"enhanced_images\"):\n        self.input_dir = Path(input_dir)\n        self.output_dir = Path(output_dir)\n        self.output_dir.mkdir(exist_ok=True)\n        self.sobel_dir = self.output_dir / \"sobel_enhanced\"",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "create_comprehensive_visualization",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def create_comprehensive_visualization(img_dir=\"img\", enhanced_dir=\"enhanced_images\"):\n    \"\"\"Create comprehensive visualization of all enhancements.\"\"\"\n    img_dir = Path(img_dir)\n    enhanced_dir = Path(enhanced_dir)\n    image_files = list(img_dir.glob(\"*.png\")) + list(img_dir.glob(\"*.jpg\"))\n    for img_file in sorted(image_files):\n        image_name = img_file.stem\n        original = cv2.imread(str(img_file), cv2.IMREAD_GRAYSCALE)\n        if original is None:\n            continue",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "create_side_by_side_enhancement_grid",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def create_side_by_side_enhancement_grid(img_dir=\"img\", enhanced_dir=\"enhanced_images\"):\n    \"\"\"Create a side-by-side grid of all enhancements.\"\"\"\n    img_dir = Path(img_dir)\n    enhanced_dir = Path(enhanced_dir)\n    image_files = list(img_dir.glob(\"*.png\")) + list(img_dir.glob(\"*.jpg\"))\n    image_files = sorted(image_files)\n    if not image_files:\n        print(\"No images found\")\n        return\n    fig = plt.figure(figsize=(20, 8 * len(image_files)))",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "analyze_folder",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def analyze_folder(folder_path):\n    \"\"\"Analyze images in a folder.\"\"\"\n    items = list(Path(folder_path).glob(\"*\"))\n    return len([i for i in items if i.is_file() and i.suffix in [\".png\", \".jpg\"]])\ndef get_image_stats(image_path):\n    \"\"\"Get image statistics.\"\"\"\n    img = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)\n    if img is None:\n        return None\n    return {",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "get_image_stats",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def get_image_stats(image_path):\n    \"\"\"Get image statistics.\"\"\"\n    img = cv2.imread(str(image_path), cv2.IMREAD_GRAYSCALE)\n    if img is None:\n        return None\n    return {\n        \"shape\": img.shape,\n        \"mean\": np.mean(img),\n        \"std\": np.std(img),\n        \"contrast\": np.std(img) / np.mean(img) if np.mean(img) > 0 else 0,",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "print_summary",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def print_summary(base_dir=\"enhanced_images\"):\n    \"\"\"Print summary of all processed images.\"\"\"\n    print(\"\\n\" + \"=\" * 100)\n    print(\"EDGE ENHANCEMENT PROCESSING - COMPLETE SUMMARY\")\n    print(\"=\" * 100)\n    base_dir = Path(base_dir)\n    if not base_dir.exists():\n        print(\"ERROR: No enhanced_images directory found\")\n        return\n    sobel_dir = base_dir / \"sobel_enhanced\"",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "demonstrate_medical_image_enhancement",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def demonstrate_medical_image_enhancement():\n    \"\"\"Demonstrate the medical image enhancement pipeline.\"\"\"\n    print(\"=\" * 70)\n    print(\"MEDICAL IMAGE ENHANCEMENT FOR DIAGNOSIS SUPPORT\")\n    print(\"=\" * 70)\n    print(\"\\n1. Creating synthetic medical image...\")\n    enhancer = MedicalImageEnhancer()\n    enhancer.create_sample_medical_image(image_type=\"chest\")\n    print(\"   OK: Synthetic chest X-ray created (256x256)\")\n    print(\"\\n2. Applying enhancement techniques...\")",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "example_1_basic_enhancement",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def example_1_basic_enhancement():\n    \"\"\"Demonstrates basic image enhancement with a synthetic chest X-ray.\"\"\"\n    print(\"\\n\" + \"=\" * 70)\n    print(\"EXAMPLE 1: Basic Enhancement of Synthetic Image\")\n    print(\"=\" * 70)\n    enhancer = MedicalImageEnhancer()\n    enhancer.create_sample_medical_image(image_type=\"chest\")\n    enhanced = enhancer.apply_complete_enhancement_pipeline()\n    print(\"\\nOriginal vs Enhanced Statistics:\")\n    stats = enhancer.compare_enhancements()",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "example_2_compare_denoising",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def example_2_compare_denoising():\n    \"\"\"Compare different noise reduction techniques.\"\"\"\n    print(\"\\n\" + \"=\" * 70)\n    print(\"EXAMPLE 2: Comparing Denoising Methods\")\n    print(\"=\" * 70)\n    enhancer = MedicalImageEnhancer()\n    enhancer.create_sample_medical_image(image_type=\"xray\")\n    methods = [\"bilateral\", \"morphological\", \"nlm\"]\n    print(\"\\nDenoising Methods Comparison:\")\n    print(f\"{'Method':<20} {'Mean':>12} {'Std Dev':>12} {'Contrast':>12}\")",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "example_3_clahe_tuning",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def example_3_clahe_tuning():\n    \"\"\"Demonstrate the effect of CLAHE parameters.\"\"\"\n    print(\"\\n\" + \"=\" * 70)\n    print(\"EXAMPLE 3: CLAHE Parameter Tuning\")\n    print(\"=\" * 70)\n    enhancer = MedicalImageEnhancer()\n    enhancer.create_sample_medical_image(image_type=\"mri\")\n    print(\"\\nEffect of clipLimit (tile size = 8x8):\")\n    print(f\"{'ClipLimit':<15} {'Mean':>12} {'Std Dev':>12} {'Contrast':>12}\")\n    print(\"-\" * 51)",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "example_4_edge_detection",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def example_4_edge_detection():\n    \"\"\"Compare different edge detection methods.\"\"\"\n    print(\"\\n\" + \"=\" * 70)\n    print(\"EXAMPLE 4: Edge Detection Methods\")\n    print(\"=\" * 70)\n    enhancer = MedicalImageEnhancer()\n    enhancer.create_sample_medical_image(image_type=\"xray\")\n    enhancer.apply_complete_enhancement_pipeline()\n    enhanced = enhancer.enhanced_images[\"pipeline\"]\n    methods = [\"canny\", \"sobel\", \"laplacian\"]",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "example_5_complete_analysis",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def example_5_complete_analysis():\n    \"\"\"Perform complete analysis on all synthetic image types.\"\"\"\n    print(\"\\n\" + \"=\" * 70)\n    print(\"EXAMPLE 5: Complete Analysis - All Image Types\")\n    print(\"=\" * 70)\n    image_types = [\"xray\", \"mri\", \"chest\"]\n    for img_type in image_types:\n        print(f\"\\n{img_type.upper()} Analysis:\")\n        print(\"-\" * 50)\n        enhancer = MedicalImageEnhancer()",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "example_6_custom_enhancement",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def example_6_custom_enhancement():\n    \"\"\"Demonstrate how to use the enhancer with custom numpy arrays.\"\"\"\n    print(\"\\n\" + \"=\" * 70)\n    print(\"EXAMPLE 6: Custom Image Enhancement\")\n    print(\"=\" * 70)\n    custom_image = np.random.randint(0, 256, (256, 256), dtype=np.uint8)\n    enhancer = MedicalImageEnhancer(image_array=custom_image)\n    enhancer.apply_complete_enhancement_pipeline()\n    stats = enhancer.compare_enhancements()\n    print(",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "example_7_batch_processing",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def example_7_batch_processing():\n    \"\"\"Demonstrate batch processing of multiple images.\"\"\"\n    print(\"\\n\" + \"=\" * 70)\n    print(\"EXAMPLE 7: Batch Processing\")\n    print(\"=\" * 70)\n    image_types = [\"xray\", \"mri\", \"chest\"]\n    print(\"\\nBatch Processing Results:\")\n    print(f\"{'Image Type':<15} {'Original Contrast':>20} {'Enhanced Contrast':>20}\")\n    print(\"-\" * 57)\n    for img_type in image_types:",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "run_examples",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def run_examples():\n    \"\"\"Run all examples in order.\"\"\"\n    print(\"\\n\" + \"*\" * 70)\n    print(\"MEDICAL IMAGE ENHANCEMENT - PRACTICAL EXAMPLES\")\n    print(\"*\" * 70)\n    try:\n        example_1_basic_enhancement()\n        example_2_compare_denoising()\n        example_3_clahe_tuning()\n        example_4_edge_detection()",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "run_edge_pipeline",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def run_edge_pipeline(input_dir=\"img\", output_dir=\"enhanced_images\"):\n    \"\"\"Run the Sobel/Laplacian enhancement pipeline on all images.\"\"\"\n    print(\"\\n\" + \"=\" * 90)\n    print(\"MEDICAL IMAGE ENHANCEMENT WITH EDGE DETECTION\")\n    print(\"Sobel and Laplacian Enhancement Pipeline\")\n    print(\"=\" * 90)\n    img_dir = Path(input_dir)\n    if not img_dir.exists():\n        print(\"ERROR: img folder not found\")\n        return []",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "run_pipeline_on_folder",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def run_pipeline_on_folder(\n    input_dir=\"img\",\n    output_dir=\"enhanced_images\",\n    show_output=True,\n    display_delay_ms=0,\n):\n    \"\"\"Run the full enhancement pipeline on all images in a folder.\"\"\"\n    img_dir = Path(input_dir)\n    if not img_dir.exists():\n        print(\"ERROR: img folder not found\")",
-        "detail": "medical_image_project",
-        "documentation": {}
-    },
-    {
-        "label": "build_cli",
-        "kind": 2,
-        "importPath": "medical_image_project",
-        "description": "medical_image_project",
-        "peekOfCode": "def build_cli():\n    \"\"\"Build the command line interface.\"\"\"\n    parser = argparse.ArgumentParser(\n        description=\"Unified medical image enhancement project\",\n    )\n    subparsers = parser.add_subparsers(dest=\"command\", required=True)\n    edge_parser = subparsers.add_parser(\"edge\", help=\"Run Sobel/Laplacian enhancement\")\n    edge_parser.add_argument(\"--input-dir\", default=\"img\", help=\"Input image folder\")\n    edge_parser.add_argument(\"--output-dir\", default=\"enhanced_images\", help=\"Output folder\")\n    pipeline_parser = subparsers.add_parser(",
+        "peekOfCode": "class MedicalImageEnhancer:\n    \"\"\"\n    A comprehensive class for medical image enhancement\n    \"\"\"\n    def __init__(self, image_path):\n        \"\"\"\n        Initialize with medical image\n        Args:\n            image_path: Path to the medical image\n        \"\"\"",
         "detail": "medical_image_project",
         "documentation": {}
     },
@@ -245,7 +57,7 @@
         "kind": 2,
         "importPath": "medical_image_project",
         "description": "medical_image_project",
-        "peekOfCode": "def main():\n    \"\"\"CLI entry point.\"\"\"\n    parser = build_cli()\n    args = parser.parse_args()\n    if args.command == \"edge\":\n        run_edge_pipeline(input_dir=args.input_dir, output_dir=args.output_dir)\n    elif args.command == \"pipeline\":\n        run_pipeline_on_folder(\n            input_dir=args.input_dir,\n            output_dir=args.output_dir,",
+        "peekOfCode": "def main():\n    \"\"\"\n    Main function to demonstrate medical image enhancement\n    \"\"\"\n    print(\"=\" * 70)\n    print(\"Medical Image Enhancement for Diagnosis Support\")\n    print(\"=\" * 70)\n    print()\n    # Define image paths\n    image_dir = \"img\"",
         "detail": "medical_image_project",
         "documentation": {}
     }
