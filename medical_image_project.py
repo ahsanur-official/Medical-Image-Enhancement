@@ -17,6 +17,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import os
+from collections import Counter
+from math import log2
 
 
 class MedicalImageEnhancer:
@@ -61,6 +63,18 @@ class MedicalImageEnhancer:
             sigma: Standard deviation for Gaussian kernel
         """
         return cv2.GaussianBlur(self.original, kernel_size, sigma)
+
+    def average_filter(self, kernel_size=(5,5)):
+        """
+        Apply average (box) filter for simple smoothing
+
+        Args:
+            kernel_size: tuple of kernel size (width, height)
+        """
+        # cv2.blur expects ksize as tuple of ints
+        kx = int(kernel_size[0]) if isinstance(kernel_size, (list, tuple)) else int(kernel_size)
+        ky = int(kernel_size[1]) if isinstance(kernel_size, (list, tuple)) else int(kernel_size)
+        return cv2.blur(self.original, (kx, ky))
     
     def median_filter(self, kernel_size=5):
         """
@@ -176,13 +190,13 @@ class MedicalImageEnhancer:
         
         return enhanced
     
-    def sobel_edge_detection(self):
+    def sobel_edge_detection(self, ksize=3):
         """
         Apply Sobel edge detection
         """
         # Calculate gradients
-        sobel_x = cv2.Sobel(self.original, cv2.CV_64F, 1, 0, ksize=3)
-        sobel_y = cv2.Sobel(self.original, cv2.CV_64F, 0, 1, ksize=3)
+        sobel_x = cv2.Sobel(self.original, cv2.CV_64F, 1, 0, ksize=ksize)
+        sobel_y = cv2.Sobel(self.original, cv2.CV_64F, 0, 1, ksize=ksize)
         
         # Combine gradients
         sobel = np.sqrt(sobel_x**2 + sobel_y**2)
@@ -247,8 +261,95 @@ class MedicalImageEnhancer:
         """
         Calculate histogram for visualization
         """
-        hist = cv2.calcHist([image], [0], None, [256], [0, 256])
+        hist = cv2.calcHist([image], [0], None, [256], [0, 256]).flatten()
         return hist
+
+    def compute_histogram_features(self, image):
+        """
+        Compute useful histogram-based features: mean, median, mode,
+        std, entropy, skewness (approx), kurtosis (approx).
+        Returns a dict of features and the histogram array.
+        """
+        img = image.flatten()
+        # Basic statistics
+        mean = float(np.mean(img))
+        median = float(np.median(img))
+        std = float(np.std(img))
+
+        # Histogram and probabilities
+        hist = self.plot_histogram(image)
+        total = hist.sum() if hist.sum() > 0 else 1
+        probs = hist / total
+
+        # Mode (most frequent intensity)
+        mode = int(np.argmax(hist))
+
+        # Entropy
+        entropy = 0.0
+        for p in probs:
+            if p > 0:
+                entropy -= p * log2(p)
+
+        # Approximate skewness and kurtosis using central moments
+        if std > 0:
+            skewness = float(np.mean(((img - mean) / std) ** 3))
+            kurtosis = float(np.mean(((img - mean) / std) ** 4) - 3.0)
+        else:
+            skewness = 0.0
+            kurtosis = 0.0
+
+        features = {
+            'mean': mean,
+            'median': median,
+            'mode': mode,
+            'std': std,
+            'entropy': entropy,
+            'skewness': skewness,
+            'kurtosis': kurtosis
+        }
+
+        return features, hist
+
+    def display_histogram(self, ax, image, title="Histogram", color='blue', annotate=True):
+        """
+        Plot histogram on provided axes and optionally annotate with features.
+        """
+        features, hist = self.compute_histogram_features(image)
+        ax.plot(hist, color=color)
+        ax.set_title(title, fontsize=10)
+        ax.set_xlim([0, 256])
+        if annotate:
+            txt = (f"mean={features['mean']:.1f}\nmedian={features['median']:.1f}\n"
+                   f"mode={features['mode']}\nstd={features['std']:.1f}\nentropy={features['entropy']:.2f}")
+            ax.text(0.98, 0.95, txt, transform=ax.transAxes, fontsize=9,
+                    verticalalignment='top', horizontalalignment='right', bbox=dict(facecolor='white', alpha=0.7))
+
+    def histogram_matching(self, source, template):
+        """
+        Match the histogram of `source` image to that of `template` image.
+        Returns the matched image.
+        """
+        oldshape = source.shape
+        source = source.ravel()
+        template = template.ravel()
+
+        # get the set of unique pixel values and their corresponding
+        # indices and counts
+        s_values, bin_idx, s_counts = np.unique(source, return_inverse=True, return_counts=True)
+        t_values, t_counts = np.unique(template, return_counts=True)
+
+        # take cumulative distribution functions
+        s_quantiles = np.cumsum(s_counts).astype(np.float64)
+        s_quantiles /= s_quantiles[-1]
+
+        t_quantiles = np.cumsum(t_counts).astype(np.float64)
+        t_quantiles /= t_quantiles[-1]
+
+        # interpolate pixel values
+        interp_t_values = np.interp(s_quantiles, t_quantiles, t_values)
+
+        matched = interp_t_values[bin_idx].reshape(oldshape).astype(np.uint8)
+        return matched
     
     def compare_enhancements(self, save_path=None):
         """
@@ -293,6 +394,18 @@ class MedicalImageEnhancer:
             print(f"Comparison saved to {save_path}")
         
         plt.show()
+
+        # Also show annotated histograms for each displayed image
+        try:
+            fig2, axes2 = plt.subplots(2, 4, figsize=(20, 8))
+            for ax, (img, title) in zip(axes2.flat, images):
+                self.display_histogram(ax, img, title=f'{title} Histogram', annotate=True)
+            fig2.suptitle(f'Histograms - {self.image_name}', fontsize=14, fontweight='bold')
+            plt.tight_layout()
+            plt.show()
+        except Exception:
+            # If histogram plotting fails for any reason, continue silently
+            pass
     
     def analyze_noise_reduction(self, save_path=None):
         """
@@ -370,24 +483,16 @@ class MedicalImageEnhancer:
         
         # Add histograms in the remaining spaces
         ax_hist1 = fig.add_subplot(gs[2, 0])
-        ax_hist1.plot(self.plot_histogram(self.original), color='blue')
-        ax_hist1.set_title('Original Histogram', fontsize=10)
-        ax_hist1.set_xlim([0, 256])
+        self.display_histogram(ax_hist1, self.original, title='Original Histogram', color='blue')
         
         ax_hist2 = fig.add_subplot(gs[2, 1])
-        ax_hist2.plot(self.plot_histogram(hist_eq), color='green')
-        ax_hist2.set_title('Hist. Eq. Histogram', fontsize=10)
-        ax_hist2.set_xlim([0, 256])
+        self.display_histogram(ax_hist2, hist_eq, title='Hist. Eq. Histogram', color='green')
         
         ax_hist3 = fig.add_subplot(gs[2, 2])
-        ax_hist3.plot(self.plot_histogram(clahe), color='red')
-        ax_hist3.set_title('CLAHE Histogram', fontsize=10)
-        ax_hist3.set_xlim([0, 256])
+        self.display_histogram(ax_hist3, clahe, title='CLAHE Histogram', color='red')
         
         ax_hist4 = fig.add_subplot(gs[2, 3])
-        ax_hist4.plot(self.plot_histogram(self.advanced_enhancement()), color='purple')
-        ax_hist4.set_title('Advanced Histogram', fontsize=10)
-        ax_hist4.set_xlim([0, 256])
+        self.display_histogram(ax_hist4, self.advanced_enhancement(), title='Advanced Histogram', color='purple')
         
         fig.suptitle(f'Contrast Enhancement Techniques - {self.image_name}', 
                      fontsize=16, fontweight='bold', y=0.99)

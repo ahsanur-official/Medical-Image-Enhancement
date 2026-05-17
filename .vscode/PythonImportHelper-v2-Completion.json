@@ -1,5 +1,73 @@
 [
     {
+        "label": "Flask",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "request",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "render_template",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "jsonify",
+        "importPath": "flask",
+        "description": "flask",
+        "isExtraImport": true,
+        "detail": "flask",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "tempfile",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "tempfile",
+        "description": "tempfile",
+        "detail": "tempfile",
+        "documentation": {}
+    },
+    {
+        "label": "base64",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "base64",
+        "description": "base64",
+        "detail": "base64",
+        "documentation": {}
+    },
+    {
+        "label": "io",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "io",
+        "description": "io",
+        "detail": "io",
+        "documentation": {}
+    },
+    {
         "label": "cv2",
         "kind": 6,
         "isExtraImport": true,
@@ -15,6 +83,23 @@
         "importPath": "numpy",
         "description": "numpy",
         "detail": "numpy",
+        "documentation": {}
+    },
+    {
+        "label": "MedicalImageEnhancer",
+        "importPath": "medical_image_project",
+        "description": "medical_image_project",
+        "isExtraImport": true,
+        "detail": "medical_image_project",
+        "documentation": {}
+    },
+    {
+        "label": "traceback",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "traceback",
+        "description": "traceback",
+        "detail": "traceback",
         "documentation": {}
     },
     {
@@ -35,12 +120,46 @@
         "documentation": {}
     },
     {
-        "label": "os",
-        "kind": 6,
+        "label": "Counter",
+        "importPath": "collections",
+        "description": "collections",
         "isExtraImport": true,
-        "importPath": "os",
-        "description": "os",
-        "detail": "os",
+        "detail": "collections",
+        "documentation": {}
+    },
+    {
+        "label": "log2",
+        "importPath": "math",
+        "description": "math",
+        "isExtraImport": true,
+        "detail": "math",
+        "documentation": {}
+    },
+    {
+        "label": "index",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def index():\n    return render_template('index.html')\n@app.route('/api/process', methods=['POST'])\ndef api_process():\n    # Expect 'image' file and 'technique' field\n    if 'image' not in request.files:\n        return jsonify({'error': 'No image uploaded'}), 400\n    img_file = request.files['image']\n    technique = request.form.get('technique', 'comprehensive')\n    # Optional parameters",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "api_process",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def api_process():\n    # Expect 'image' file and 'technique' field\n    if 'image' not in request.files:\n        return jsonify({'error': 'No image uploaded'}), 400\n    img_file = request.files['image']\n    technique = request.form.get('technique', 'comprehensive')\n    # Optional parameters\n    clahe_clip = float(request.form.get('clahe_clip') or 2.0)\n    gamma = float(request.form.get('gamma') or 1.0)\n    # kernel sizes",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
+        "label": "app",
+        "kind": 5,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "app = Flask(__name__, static_folder='static', template_folder='templates')\n@app.route('/')\ndef index():\n    return render_template('index.html')\n@app.route('/api/process', methods=['POST'])\ndef api_process():\n    # Expect 'image' file and 'technique' field\n    if 'image' not in request.files:\n        return jsonify({'error': 'No image uploaded'}), 400\n    img_file = request.files['image']",
+        "detail": "app",
         "documentation": {}
     },
     {

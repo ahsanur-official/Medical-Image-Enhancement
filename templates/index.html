@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Medical Image Enhancer</title>
+    <link rel="stylesheet" href="/static/style.css" />
+    <!-- Chart.js CDN removed to avoid Tracking Prevention issues; using lightweight canvas rendering -->
+  </head>
+  <body>
+    <div class="container">
+      <div class="header-card">
+        <nav class="topbar">
+          <div class="brand header-large">
+            <div class="logo" aria-hidden="true">
+              <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="2" y="2" width="20" height="20" rx="4" fill="rgba(255,255,255,0.04)"/>
+                <path d="M7 12h10M12 7v10" stroke="#06b6d4" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div class="brand-text">
+              <h1>MedEnhance — Medical Image Enhancer</h1>
+              <span class="tag">Interactive denoise, contrast & histogram tools</span>
+            </div>
+          </div>
+        </nav>
+      </div>
+
+      <header class="hero">
+        <h2>Upload → Enhance → Download</h2>
+        <p>
+          Modern UI for exploring denoising, contrast, edges, and histograms.
+        </p>
+      </header>
+
+      <main class="main-content">
+        <div class="card upload-card">
+          <label class="file-drop" id="fileDrop">
+            <input type="file" id="imageInput" accept="image/*" />
+            <div class="file-drop-content">
+              <svg width="48" height="48" viewBox="0 0 24 24" fill="none">
+                <path
+                  d="M12 3v10"
+                  stroke="#4B5563"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <path
+                  d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"
+                  stroke="#4B5563"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+              <p>Click or drop image here</p>
+            </div>
+          </label>
+
+          <div class="controls">
+            <select id="techniqueSelect">
+              <option>Choose a option.</option>
+              <option value="average">Average Filter (Box Blur)</option>
+              <option value="median">Median Filter</option>
+              <option value="sobel">Sobel Edge Detection</option>
+              <option value="laplacian">Laplacian Edge Enhancement</option>
+              <option value="clahe">CLAHE Only</option>
+              <option value="histogram">Histogram Equalization</option>
+            </select>
+
+            <div id="params" class="params">
+              <label
+                >CLAHE Clip:
+                <input
+                  id="claheClip"
+                  type="range"
+                  min="1"
+                  max="8"
+                  step="0.1"
+                  value="2"
+                />
+                <span id="claheVal">2.0</span></label
+              >
+              
+              <label
+                >Kernel Size:
+                <input
+                  id="kernelSize"
+                  type="range"
+                  min="1"
+                  max="31"
+                  step="2"
+                  value="5"
+                />
+                <span id="kernelSizeVal">5</span></label
+              >
+              <label
+                >Sobel Ksize:
+                <select id="sobelK">
+                  <option>1</option>
+                  <option selected>3</option>
+                  <option>5</option>
+                  <option>7</option>
+                </select></label
+              >
+              <label class="template-upload"
+                >Template (for match):
+                <input type="file" id="templateInput" accept="image/*"
+              /></label>
+            </div>
+
+            <button id="processBtn" class="btn primary">Process Image</button>
+          </div>
+        </div>
+
+        <div class="card result-card" id="resultCard" style="display: none">
+          <h2>Result</h2>
+          <div class="images">
+            <div>
+              <h3>Original</h3>
+              <img id="origImg" src="" alt="Original" />
+              <pre id="origFeatures"></pre>
+              <canvas id="origHist" height="120"></canvas>
+            </div>
+            <div>
+              <h3>Processed</h3>
+              <img id="procImg" src="" alt="Processed" />
+              <pre id="procFeatures"></pre>
+              <a id="downloadLink" class="btn" download="enhanced.png"
+                >Download PNG</a
+              >
+              <canvas id="procHist" height="120"></canvas>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <div class="footer-card">
+        <footer class="site-footer">
+          <small
+            >Made for medical image enhancement demos. Close this window to stop
+            the server.</small
+          >
+          <div class="credit">
+            &copy 2026 | Made with 💖 by
+            <a href="https://ahsanur-portfolio.netlify.app/"
+              >Md. Ahsanur Rahaman.</a
+            >
+          </div>
+        </footer>
+      </div>
+    </div>
+
+    <script src="/static/app.js"></script>
+    <div
+      id="notify"
+      class="notify"
+      aria-live="assertive"
+      role="alert"
+      style="display: none"
+    >
+      <div class="notify-inner">
+        <div id="notifyMessage"></div>
+        <button id="notifyClose" class="btn">OK</button>
+      </div>
+    </div>
+  </body>
+</html>

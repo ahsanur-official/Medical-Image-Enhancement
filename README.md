@@ -198,6 +198,28 @@ By working with this project, you will understand:
 ### Key Algorithms Explained
 
 #### CLAHE (Contrast Limited Adaptive Histogram Equalization)
+
+## 🕸️ Web UI
+
+This repository now includes a simple Flask-based web UI for interactive use.
+
+Files added:
+- `app.py` — Flask server exposing `/` and `/api/process` endpoints
+- `templates/index.html` — Frontend UI
+- `static/style.css` — Styling
+- `static/app.js` — Frontend JavaScript
+
+Run the web app locally:
+
+```bash
+pip install -r requirements.txt
+python app.py
+```
+
+Open your browser to `http://127.0.0.1:5000/`. Upload an image, choose an
+enhancement technique, preview results, and download the processed PNG. The
+UI also shows basic histogram features before/after processing.
+
 - Divides image into small tiles
 - Applies histogram equalization to each tile
 - Uses contrast limiting to prevent noise amplification
