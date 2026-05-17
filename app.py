@@ -8,7 +8,18 @@ import numpy as np
 from medical_image_project import MedicalImageEnhancer
 import traceback
 
+try:
+    from flask_cors import CORS
+    _has_flask_cors = True
+except Exception:
+    _has_flask_cors = False
+
 app = Flask(__name__, static_folder='static', template_folder='templates')
+# allow cross-origin requests during development if flask-cors is installed
+if _has_flask_cors:
+    CORS(app)
+else:
+    print('Warning: flask-cors not installed — CORS disabled. Install with: pip install flask-cors')
 
 @app.route('/')
 def index():
@@ -132,6 +143,11 @@ def api_process():
             os.remove(path)
         except Exception:
             pass
+
+
+@app.route('/api/health', methods=['GET'])
+def api_health():
+    return jsonify({'status': 'ok'})
 
 
 if __name__ == '__main__':

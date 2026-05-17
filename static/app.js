@@ -1,36 +1,37 @@
-const imageInput = document.getElementById('imageInput');
-const processBtn = document.getElementById('processBtn');
-const techniqueSelect = document.getElementById('techniqueSelect');
-const resultCard = document.getElementById('resultCard');
-const origImg = document.getElementById('origImg');
-const procImg = document.getElementById('procImg');
-const origFeatures = document.getElementById('origFeatures');
-const procFeatures = document.getElementById('procFeatures');
-const downloadLink = document.getElementById('downloadLink');
-const claheClip = document.getElementById('claheClip');
-const claheVal = document.getElementById('claheVal');
-const gamma = document.getElementById('gamma');
-const gammaVal = document.getElementById('gammaVal');
-const templateInput = document.getElementById('templateInput');
-const origHistCanvas = document.getElementById('origHist');
-const procHistCanvas = document.getElementById('procHist');
-const sampleBtn = document.getElementById('sampleBtn');
-const resetBtn = document.getElementById('resetBtn');
-const fileDrop = document.getElementById('fileDrop');
-const notify = document.getElementById('notify');
-const notifyMessage = document.getElementById('notifyMessage');
-const notifyClose = document.getElementById('notifyClose');
+document.addEventListener('DOMContentLoaded', () => {
+  const imageInput = document.getElementById('imageInput');
+  const processBtn = document.getElementById('processBtn');
+  const techniqueSelect = document.getElementById('techniqueSelect');
+  const resultCard = document.getElementById('resultCard');
+  const origImg = document.getElementById('origImg');
+  const procImg = document.getElementById('procImg');
+  const origFeatures = document.getElementById('origFeatures');
+  const procFeatures = document.getElementById('procFeatures');
+  const downloadLink = document.getElementById('downloadLink');
+  const claheClip = document.getElementById('claheClip');
+  const claheVal = document.getElementById('claheVal');
+  const gamma = document.getElementById('gamma');
+  const gammaVal = document.getElementById('gammaVal');
+  const templateInput = document.getElementById('templateInput');
+  const origHistCanvas = document.getElementById('origHist');
+  const procHistCanvas = document.getElementById('procHist');
+  const resetBtn = document.getElementById('resetBtn');
+  const fileDrop = document.getElementById('fileDrop');
+  const notify = document.getElementById('notify');
+  const notifyMessage = document.getElementById('notifyMessage');
+  const notifyClose = document.getElementById('notifyClose');
 
-let origChart = null;
-let procChart = null;
+  let origChart = null;
+  let procChart = null;
 
-const kernelSize = document.getElementById('kernelSize');
-const kernelSizeVal = document.getElementById('kernelSizeVal');
-const sobelK = document.getElementById('sobelK');
+  const kernelSize = document.getElementById('kernelSize');
+  const kernelSizeVal = document.getElementById('kernelSizeVal');
+  const sobelK = document.getElementById('sobelK');
 
-claheClip.addEventListener('input', () => { claheVal.textContent = claheClip.value; });
-kernelSize.addEventListener('input', ()=> { kernelSizeVal.textContent = kernelSize.value; });
-sobelK.addEventListener('change', ()=>{});
+  // safe guards: only attach listeners when elements exist
+  if (claheClip && claheVal) claheClip.addEventListener('input', () => { claheVal.textContent = claheClip.value; });
+  if (kernelSize && kernelSizeVal) kernelSize.addEventListener('input', ()=> { kernelSizeVal.textContent = kernelSize.value; });
+  if (sobelK) sobelK.addEventListener('change', ()=>{});
 
 // show/hide params based on technique
 const params = document.getElementById('params');
@@ -49,8 +50,10 @@ function updateParamsVisibility(){
     kLabel.style.display='none'; sLabel.style.display='none';
   }
 }
-techniqueSelect.addEventListener('change', updateParamsVisibility);
-updateParamsVisibility();
+if (techniqueSelect) {
+  techniqueSelect.addEventListener('change', updateParamsVisibility);
+  updateParamsVisibility();
+}
 
 // spinner overlay
 const spinner = document.createElement('div');
@@ -60,6 +63,45 @@ document.body.appendChild(spinner);
 
 function showSpinner(){ spinner.classList.add('active'); }
 function hideSpinner(){ spinner.classList.remove('active'); }
+
+
+// quick backend health check (non-blocking) — try Flask first, then relative
+let _backendLastState = null; // 'up' | 'down'
+async function checkBackend(){
+  const tryUrls = ['http://127.0.0.1:5000/api/health','/api/health'];
+  let ok = false;
+  for (const u of tryUrls) {
+    try {
+      const r = await fetch(u, { method: 'GET' });
+      if (r.ok) { ok = true; break; }
+    } catch(e) {
+      // ignore and try next
+    }
+  }
+
+  const el = document.getElementById('backendStatus');
+  const dot = el ? el.querySelector('.status-dot') : null;
+  if (ok) {
+    if (dot) { dot.classList.remove('status-unknown','status-down'); dot.classList.add('status-up'); }
+    if (_backendLastState !== 'up') {
+      _backendLastState = 'up';
+      // clear previous unreachable notification if present
+      hideNotification();
+    }
+    return true;
+  } else {
+    if (dot) { dot.classList.remove('status-up','status-unknown'); dot.classList.add('status-down'); }
+    if (_backendLastState !== 'down') {
+      _backendLastState = 'down';
+      showNotification('Backend not reachable. Start Flask: python app.py');
+    }
+    return false;
+  }
+}
+
+// poll backend and update indicator periodically
+checkBackend();
+setInterval(checkBackend, 5000);
 
 
 
@@ -75,7 +117,7 @@ function showNotification(msg){
 
 function hideNotification(){ if(notify) { notify.style.display = 'none'; if(_notifyTimer){ clearTimeout(_notifyTimer); _notifyTimer = null; } } }
 
-notifyClose && notifyClose.addEventListener('click', ()=> hideNotification());
+  notifyClose && notifyClose.addEventListener('click', ()=> hideNotification());
 
 function drawHistogram(canvas, data, color){
   if (!canvas) return;
@@ -114,7 +156,7 @@ function drawHistogram(canvas, data, color){
   ctx.stroke();
 }
 
-processBtn.addEventListener('click', async () => {
+if (processBtn) processBtn.addEventListener('click', async () => {
   if (!imageInput.files || imageInput.files.length === 0) { showNotification('Please select an image first'); return; }
 
   const file = imageInput.files[0];
@@ -131,8 +173,42 @@ processBtn.addEventListener('click', async () => {
   if (templateInput.files && templateInput.files[0]) form.append('template', templateInput.files[0]);
 
   try {
-    const res = await fetch('/api/process', { method: 'POST', body: form });
-    const data = await res.json();
+    // prefer Flask origin first (when running backend separately), then try relative
+    const tryUrls = ['http://127.0.0.1:5000/api/process','/api/process'];
+    let res = null;
+    for (const u of tryUrls) {
+      try {
+        res = await fetch(u, { method: 'POST', body: form });
+        break;
+      } catch (e) {
+        // try next
+      }
+    }
+    if (!res) {
+      showNotification('Request failed: network or backend unavailable');
+      hideSpinner(); processBtn.disabled = false; processBtn.textContent = 'Process Image';
+      return;
+    }
+
+    // handle non-JSON or empty responses safely
+    if (!res.ok) {
+      const text = await res.text().catch(()=>null);
+      const msg = text ? `Server error: ${text}` : `Server returned ${res.status} ${res.statusText}`;
+      showNotification(msg);
+      hideSpinner();
+      processBtn.disabled = false; processBtn.textContent = 'Process Image';
+      return;
+    }
+
+    const contentType = res.headers.get('content-type') || '';
+    let data = null;
+    if (contentType.includes('application/json')) {
+      try { data = await res.json(); }
+      catch (e) { showNotification('Failed to parse JSON response from server'); hideSpinner(); processBtn.disabled = false; processBtn.textContent = 'Process Image'; return; }
+    } else {
+      const text = await res.text().catch(()=>null);
+      showNotification('Unexpected server response: ' + (text || 'empty')); hideSpinner(); processBtn.disabled = false; processBtn.textContent = 'Process Image'; return;
+    }
     if (data.error) { showNotification('Error: ' + data.error); hideSpinner(); processBtn.disabled = false; processBtn.textContent = 'Process Image'; return; }
 
     // show original preview
@@ -163,23 +239,21 @@ processBtn.addEventListener('click', async () => {
 });
 
 // drag & drop behavior
-fileDrop.addEventListener('dragover', (e) => { e.preventDefault(); fileDrop.classList.add('drag'); });
-fileDrop.addEventListener('dragleave', (e) => { fileDrop.classList.remove('drag'); });
-fileDrop.addEventListener('drop', (e) => { e.preventDefault(); fileDrop.classList.remove('drag'); if (e.dataTransfer.files[0]) imageInput.files = e.dataTransfer.files; const label = fileDrop.querySelector('.file-drop-content p'); label.textContent = imageInput.files[0].name; });
+if (fileDrop) {
+  fileDrop.addEventListener('dragover', (e) => { e.preventDefault(); fileDrop.classList.add('drag'); });
+  fileDrop.addEventListener('dragleave', (e) => { fileDrop.classList.remove('drag'); });
+  fileDrop.addEventListener('drop', (e) => { e.preventDefault(); fileDrop.classList.remove('drag'); if (e.dataTransfer.files[0] && imageInput) imageInput.files = e.dataTransfer.files; const label = fileDrop.querySelector('.file-drop-content p'); if (label && imageInput && imageInput.files[0]) label.textContent = imageInput.files[0].name; });
+}
 
-imageInput.addEventListener('change', () => { if (imageInput.files && imageInput.files[0]) { const label = fileDrop.querySelector('.file-drop-content p'); label.textContent = imageInput.files[0].name; } });
+if (imageInput) {
+  imageInput.addEventListener('change', () => { if (imageInput.files && imageInput.files[0] && fileDrop) { const label = fileDrop.querySelector('.file-drop-content p'); if (label) label.textContent = imageInput.files[0].name; } });
+}
 
-sampleBtn.addEventListener('click', ()=>{
-  fetch('/img/xray.png').then(r=>{ if(!r.ok) throw new Error('not found'); return r.blob(); }).then(blob=>{
-    const f = new File([blob],'xray.png',{type:blob.type}); const dt = new DataTransfer(); dt.items.add(f); imageInput.files = dt.files; const label = fileDrop.querySelector('.file-drop-content p'); label.textContent = f.name;
-    }).catch(()=>showNotification('Sample image not available in /img'));
-});
+// sample button removed — no-op
 
-// Hide sample button if file not present to avoid 404 spam
-fetch('/img/xray.png', { method: 'GET' }).then(r => {
-  if (!r.ok) sampleBtn.style.display = 'none';
-}).catch(()=>{ sampleBtn.style.display = 'none'; });
-
-resetBtn.addEventListener('click', ()=>{
-  imageInput.value=''; templateInput.value=''; origImg.src=''; procImg.src=''; origFeatures.textContent=''; procFeatures.textContent=''; resultCard.style.display='none'; if(origChart){origChart.destroy(); origChart=null} if(procChart){procChart.destroy(); procChart=null} const label = fileDrop.querySelector('.file-drop-content p'); label.textContent='Click or drop image here';
+if (resetBtn) {
+  resetBtn.addEventListener('click', ()=>{
+    if (imageInput) imageInput.value=''; if (templateInput) templateInput.value=''; if (origImg) origImg.src=''; if (procImg) procImg.src=''; if (origFeatures) origFeatures.textContent=''; if (procFeatures) procFeatures.textContent=''; if (resultCard) resultCard.style.display='none'; if(origChart){origChart.destroy(); origChart=null} if(procChart){procChart.destroy(); procChart=null} const label = fileDrop ? fileDrop.querySelector('.file-drop-content p') : null; if (label) label.textContent='Click or drop image here';
+  });
+}
 });

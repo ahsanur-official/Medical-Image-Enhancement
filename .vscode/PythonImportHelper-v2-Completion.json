@@ -154,11 +154,20 @@
         "documentation": {}
     },
     {
+        "label": "api_health",
+        "kind": 2,
+        "importPath": "app",
+        "description": "app",
+        "peekOfCode": "def api_health():\n    return jsonify({'status': 'ok'})\nif __name__ == '__main__':\n    app.run(host='0.0.0.0', port=5000, debug=True)",
+        "detail": "app",
+        "documentation": {}
+    },
+    {
         "label": "app",
         "kind": 5,
         "importPath": "app",
         "description": "app",
-        "peekOfCode": "app = Flask(__name__, static_folder='static', template_folder='templates')\n@app.route('/')\ndef index():\n    return render_template('index.html')\n@app.route('/api/process', methods=['POST'])\ndef api_process():\n    # Expect 'image' file and 'technique' field\n    if 'image' not in request.files:\n        return jsonify({'error': 'No image uploaded'}), 400\n    img_file = request.files['image']",
+        "peekOfCode": "app = Flask(__name__, static_folder='static', template_folder='templates')\n# allow cross-origin requests during development if flask-cors is installed\nif _has_flask_cors:\n    CORS(app)\nelse:\n    print('Warning: flask-cors not installed — CORS disabled. Install with: pip install flask-cors')\n@app.route('/')\ndef index():\n    return render_template('index.html')\n@app.route('/api/process', methods=['POST'])",
         "detail": "app",
         "documentation": {}
     },
