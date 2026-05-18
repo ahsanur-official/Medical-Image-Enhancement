@@ -129,6 +129,7 @@
                 <option value="laplacian">Laplacian Edge Enhancement</option>
                 <option value="clahe">CLAHE Only</option>
                 <option value="histogram">Histogram Equalization</option>
+                <option value="all">All Filters (Comparison)</option>
               </select>
             </label>
 
@@ -240,11 +241,16 @@
           <div class="results-header">
             <h2 class="section-title">Analysis & Results</h2>
             <div class="results-actions">
-              <a
-                id="downloadLink"
-                class="btn primary outline-glow-btn download-btn"
-                download="enhanced.png"
-              >
+              <div class="result-controls">
+                <button id="prevBtn" class="btn secondary glass-btn" style="display:none">◀</button>
+                <span id="procLabel" class="label-with-icon" style="margin:0 8px;display:none">Processed</span>
+                <button id="nextBtn" class="btn secondary glass-btn" style="display:none">▶</button>
+
+                <a
+                  id="downloadLink"
+                  class="btn primary outline-glow-btn download-btn"
+                  download="enhanced.png"
+                >
                 <svg
                   width="18"
                   height="18"
@@ -260,7 +266,8 @@
                   <line x1="12" y1="15" x2="12" y2="3"></line>
                 </svg>
                 Save Output
-              </a>
+                </a>
+              </div>
             </div>
           </div>
 
@@ -283,6 +290,7 @@
               </h3>
               <div class="img-wrapper">
                 <img id="procImg" src="" alt="Processed" />
+                <div id="procList" class="proc-list"></div>
               </div>
               <pre id="procFeatures" class="data-box"></pre>
               <canvas id="procHist" class="hist-canvas" height="120"></canvas>

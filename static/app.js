@@ -215,12 +215,49 @@ if (processBtn) processBtn.addEventListener('click', async () => {
     const reader = new FileReader();
     reader.onload = () => { origImg.src = reader.result; };
     reader.readAsDataURL(file);
+    // processed image(s) and features
+    if (Array.isArray(data.processed_images) && data.processed_images.length > 0) {
+      const items = data.processed_images;
+      const procList = document.getElementById('procList');
+      const procLabel = document.getElementById('procLabel');
 
-    // processed image and features
-    procImg.src = 'data:image/png;base64,' + data.processed_image_png_base64;
+      // hide prev/next controls when stacking
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      if (prevBtn) prevBtn.style.display = 'none';
+      if (nextBtn) nextBtn.style.display = 'none';
+
+      // clear list and append each processed image as a stacked block
+      if (procList) procList.innerHTML = '';
+      items.forEach((it, i) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'proc-item';
+        const title = document.createElement('div');
+        title.className = 'proc-item-title';
+        title.textContent = it.name;
+        const img = document.createElement('img');
+        img.src = 'data:image/png;base64,' + it.b64;
+        img.alt = it.name;
+        img.className = 'proc-item-img';
+        wrapper.appendChild(title);
+        wrapper.appendChild(img);
+        if (procList) procList.appendChild(wrapper);
+        // set download for first item
+        if (i === 0 && downloadLink) { downloadLink.href = img.src; downloadLink.style.display = 'inline-block'; downloadLink.download = it.name.replace(/\s+/g, '_') + '.png'; }
+      });
+
+      // set label to first item's name
+      if (procLabel && items[0]) { procLabel.style.display = 'inline-block'; procLabel.textContent = items[0].name; }
+
+    } else {
+      // single processed image (legacy)
+      procImg.src = 'data:image/png;base64,' + data.processed_image_png_base64;
+      if (downloadLink) { downloadLink.href = procImg.src; downloadLink.style.display = 'inline-block'; }
+    }
+
     origFeatures.textContent = JSON.stringify(data.original_features, null, 2);
     procFeatures.textContent = JSON.stringify(data.processed_features, null, 2);
-    downloadLink.href = procImg.src; downloadLink.style.display = 'inline-block'; resultCard.style.display = 'block';
+    resultCard.style.display = 'block';
 
     // histograms
     try{

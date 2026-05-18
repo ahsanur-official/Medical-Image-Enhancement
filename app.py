@@ -96,6 +96,50 @@ def api_process():
             elif technique == 'gamma':
                 # gamma >1 brightens; <1 darkens
                 out = enhancer.adaptive_gamma_correction(gamma=gamma)
+            elif technique == 'all':
+                # Produce a list of labeled filter outputs (one-by-one viewable)
+                labels = [
+                    'Original',
+                    'Gaussian Filter',
+                    'Median Filter',
+                    'Bilateral Filter',
+                    'Histogram Equalization',
+                    f'CLAHE (clip={clahe_clip})',
+                    'Unsharp Masking',
+                    'Comprehensive Enhancement'
+                ]
+
+                imgs = [
+                    enhancer.original,
+                    enhancer.gaussian_filter(),
+                    enhancer.median_filter(),
+                    enhancer.bilateral_filter(),
+                    enhancer.histogram_equalization(),
+                    enhancer.clahe(clip_limit=clahe_clip),
+                    enhancer.unsharp_masking(),
+                    enhancer.comprehensive_enhancement()
+                ]
+
+                # Resize outputs to a reasonable maximum while preserving aspect
+                h, w = enhancer.original.shape[:2]
+                max_dim = 512
+                scale = min(1.0, float(max_dim) / max(w, h))
+                tw = max(1, int(w * scale))
+                th = max(1, int(h * scale))
+                resized = [cv2.resize(im, (tw, th)) for im in imgs]
+
+                # Encode each tile as PNG base64 and return as list
+                processed_images = []
+                for lbl, im in zip(labels, resized):
+                    success, enc = cv2.imencode('.png', im)
+                    if not success:
+                        raise RuntimeError('Failed to encode montage tile')
+                    b64 = base64.b64encode(enc.tobytes()).decode('utf-8')
+                    processed_images.append({'name': lbl, 'b64': b64})
+
+                # For backward compatibility, set out to the first image so
+                # downstream feature/histogram computation continues to work
+                out = resized[0]
             else:
                 out = enhancer.comprehensive_enhancement()
 
